@@ -5,6 +5,7 @@ import "fmt"
 type node struct {
 	value interface{}
 	next  *node
+  prev  *node
 }
 
 type LinkedList struct {
@@ -18,7 +19,7 @@ func New() LinkedList {
 }
 
 func (ll *LinkedList) Append(val interface{}) {
-	newNode := node{value: val}
+	newNode := node{value: val, prev: ll.tail}
 	if ll.head == nil {
 		ll.head = &newNode
 		ll.tail = ll.head
@@ -32,6 +33,7 @@ func (ll *LinkedList) Append(val interface{}) {
 
 func (ll *LinkedList) Prepend(val interface{}) {
 	newNode := node{value: val, next: ll.head}
+  ll.head.prev = &newNode
 	ll.head = &newNode
 	ll.Length += 1
 }
@@ -54,8 +56,10 @@ func (ll *LinkedList) Insert(position int, val interface{}) error {
 	}
 
 	before := ll.traverseToPosition(position - 1)
-	newNode := node{value: val, next: before.next}
+	newNode := node{value: val, next: before.next, prev: before}
 	before.next = &newNode
+  newNode.next.prev = &newNode
+  ll.Length++
 
 	return nil
 }
@@ -67,6 +71,7 @@ func (ll *LinkedList) Remove(position int) error {
 
 	before := ll.traverseToPosition(position - 1)
 	before.next = before.next.next
+  before.next.prev = before
 	ll.Length--
 	return nil
 }
@@ -89,4 +94,24 @@ func (ll *LinkedList) Print() {
 		curr = curr.next
 	}
 	fmt.Println(values)
+}
+
+func (ll *LinkedList) Reverse() {
+  if ll.head.next == nil {
+    return
+  }
+
+  first := ll.head
+  ll.tail = ll.head
+  second := first.next
+
+  for second != nil {
+    tmp := second.next
+    second.next = first
+    first = second
+    second = tmp
+  }
+
+  ll.head.next = nil
+  ll.head = first
 }

@@ -55,4 +55,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+  linkedList.Reverse()
+  linkedList.Print()
 }
